@@ -1,17 +1,12 @@
 <template>
   <div id="app">
-    <LiveChat msg="Welcome"/>
+    <router-view/>
   </div>
 </template>
 
 <script>
-import LiveChat from './components/LiveChat.vue'
-
 export default {
-  name: 'App',
-  components: {
-    LiveChat
-  }
+  name: 'App'
 }
 </script>
 
