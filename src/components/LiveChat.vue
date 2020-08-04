@@ -15,72 +15,26 @@
       </svg>
     </button>
     <div class="chat-box" :class='{"chat-box_open": isOpen}'>
-      <div class="chat-box__head">
-        <div class="chat-box__title">LiveChat</div>
-        <button class="btn chat-box__btn-close" @click='openChat' title="Close">
-          <i class="icon-close icon-close_head"></i>
-        </button>
-      </div>
-      <div class="chat-box__list">
-        
-        <div class="chat-box__msg-block chat-box__msg-block_sent">
-          <div class="chat-box__msg-text">
-            <div>Hello</div>
-            <div class="chat-box__msg-date">24.07.20 15:40</div>
-          </div>
-        </div>
-        <div class="chat-box__msg-block chat-box__msg-block_received">
-          <div class="chat-box__msg-text">
-            <div>Hi!</div>
-            <div class="chat-box__msg-date">24.07.20 15:40</div>
-          </div>
-        </div>
-        <div class="chat-box__msg-block chat-box__msg-block_sent">
-          <div class="chat-box__msg-text">
-            <div>Lorem ipsum dolor, sit amet consectetur adipisicing elit.</div>
-            <div class="chat-box__msg-date">24.07.20 15:40</div>
-          </div>
-        </div>
-        <div class="chat-box__msg-block chat-box__msg-block_received">
-          <div class="chat-box__msg-text">
-            <div>Lorem ipsum dolor, sit amet consectetur adipisicing elit.</div>
-            <div class="chat-box__msg-date">24.07.20 16:35</div>
-          </div>
-        </div>
-        <div class="chat-box__msg-block chat-box__msg-block_sent">
-          <div class="chat-box__msg-text">
-            <div>Lorem ipsum dolor</div>
-            <div class="chat-box__msg-date">24.07.20 15:40</div>
-          </div>
-        </div>
-        <div class="chat-box__msg-block chat-box__msg-block_received">
-          <div class="chat-box__msg-text">
-            <div>Lorem ipsumdolorsitametconsecteturadipisicingelit.</div>
-            <div class="chat-box__msg-date">24.07.20 15:40</div>
-          </div>
-        </div>
-
-      </div>
-      <div class="chat-box__footer">
-        <div class="chat-box__input" contenteditable="true" tabindex="0" placeholder="Write a message"></div>
-        <div class="chat-box__options">
-          <button class="btn chat-box__btn-send" title="Send">
-            <svg class="icon-send" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-            </svg>
-          </button>
-        </div>
-      </div>
+      <ChatHead @open-chat='openChat'/>
+      <ChatList/>
+      <ChatFooter/>
     </div>
   </div>
 </template>
 
 <script>
+import ChatHead from '@/components/ChatHead'
+import ChatList from '@/components/ChatList'
+import ChatFooter from '@/components/ChatFooter'
+
 export default {
   data() {
     return {
       isOpen: false
     }
+  },
+  components: {
+    ChatHead, ChatList, ChatFooter
   },
   methods: {
     openChat() {
@@ -179,15 +133,6 @@ export default {
 .icon-close::after {
   transform: translateY(-50%) rotate(-45deg);
 }
-.icon-close_head {
-  width: 16px;
-  height: 16px;
-  transition: .1s;
-  opacity: .7;
-}
-.icon-close_head:hover {
-  opacity: 1;
-}
 
 /************ CHAT ************/
 
@@ -213,102 +158,5 @@ export default {
 .chat-box_open {
   opacity: 1;
   transform: scale(1);
-}
-
-/************ CHAT HEAD ************/
-
-.chat-box__head {
-  background: #14957B;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-  color: #ffffff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, .2);
-  z-index: 999;
-}
-.chat-box__btn-close {
-  background: none;
-  width: 20px;
-  height: 20px;
-}
-
-/************ CHAT LIST ************/
-
-.chat-box__list {
-  overflow-x: hidden;
-  overflow-y: auto;
-  flex-grow: 1;
-}
-.chat-box__msg-block {
-  padding: 10px;
-  display: flex;
-}
-.chat-box__msg-block_sent {
-  justify-content: flex-end;
-}
-.chat-box__msg-text {
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  padding: 10px;
-  max-width: 80%;
-  color: #555555;
-  background: #ffffff;
-  border-radius: 10px;
-  border-bottom-left-radius: 0;
-}
-.chat-box__msg-block_sent .chat-box__msg-text {
-  color: #ffffff;
-  background: #14957B;
-  border-radius: 10px;
-  border-bottom-right-radius: 0;
-}
-.chat-box__msg-date {
-  display: inline-block;
-  background: rgba(0, 0, 0, .1);
-  opacity: .7;
-  margin-top: 5px;
-  padding: 1px 5px;
-  border-radius: 5px;
-  font-size: .8rem;
-}
-
-/************ CHAT MSG ************/
-
-.chat-box__footer {
-  display: flex;
-  align-items: center;
-  background: #ffffff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, .1);
-  z-index: 999;
-}
-.chat-box__input {
-  flex-grow: 1;
-  outline: none;
-  min-height: 40px;
-  max-height: 100px;
-  overflow-x: hidden;
-  overflow-y: auto;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  cursor: text;
-  padding: 10px;
-  line-height: 1.4;
-}
-.chat-box__input:empty::before {
-  content: attr(placeholder);
-  color: #cccccc;
-}
-.chat-box__options {
-  padding: 10px;
-}
-.chat-box__btn-send {
-  background: none;
-  display: flex;
-}
-.icon-send {
-  fill: #333333;
-  width: 20px;
-  height: 20px;
 }
 </style>
