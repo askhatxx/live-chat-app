@@ -1,28 +1,20 @@
 <template>
   <div class="live-chat">
-    <button class="btn chat-toggle chat-toggle_new-msg" @click='openChat'>
-      <i v-show='isOpen' class="icon-close"></i>
-      <svg v-show='!isOpen' class="icon-logo" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-        <g class="icon-logo__figure">
-          <path d="M4,28a.84.84,0,0,1-.38-.08A1,1,0,0,1,3,27V8.78A4.89,4.89,0,0,1,8,4H24a4.89,4.89,0,0,1,5,4.78v9.44A4.89,4.89,0,0,1,24,23H9.41l-4.7,4.71A1,1,0,0,1,4,28ZM8,6A2.9,2.9,0,0,0,5,8.78V24.59l3.29-3.3A1,1,0,0,1,9,21H24a2.9,2.9,0,0,0,3-2.78V8.78A2.9,2.9,0,0,0,24,6Z"/>
-          <circle cx="16" cy="13.5" r="1.5"/>
-          <circle cx="21.5" cy="13.5" r="1.5"/>
-          <circle cx="10.5" cy="13.5" r="1.5"/>
-        </g>
-        <g>
-          <rect height="32" width="32"/>
-        </g>
-      </svg>
-    </button>
-    <div class="chat-box" :class='{"chat-box_open": isOpen}'>
-      <ChatHead @open-chat='openChat'/>
-      <ChatList/>
+    <ChatToggle 
+      @open-chat="openChat"
+      :isOpen="isOpen"
+      :isNewMsg="isNewMsg"
+    />
+    <div class="chat-box" :class="{'chat-box_open': isOpen}">
+      <ChatHead @open-chat="openChat"/>
+      <ChatList :chat="chat"/>
       <ChatFooter/>
     </div>
   </div>
 </template>
 
 <script>
+import ChatToggle from '@/components/ChatToggle'
 import ChatHead from '@/components/ChatHead'
 import ChatList from '@/components/ChatList'
 import ChatFooter from '@/components/ChatFooter'
@@ -30,11 +22,20 @@ import ChatFooter from '@/components/ChatFooter'
 export default {
   data() {
     return {
-      isOpen: false
+      isOpen: false,
+      isNewMsg: true,
+      chat: [
+        { text: 'Hello', date: '24.07.20 15:40', id: '01', author: 'user' },
+        { text: 'Hi!', date: '24.07.20 16:35', id: '02', author: 'admin' },
+        { text: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit.', date: '24.07.20 15:40', id: '03', author: 'user' },
+        { text: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit.', date: '24.07.20 16:35', id: '04', author: 'admin' },
+        { text: 'Lorem ipsum dolor', date: '24.07.20 15:40', id: '05', author: 'user' },
+        { text: 'Lorem ipsumdolorsitametconsecteturadipisicingelit.', date: '24.07.20 16:35', id: '06', author: 'admin' },
+      ]
     }
   },
   components: {
-    ChatHead, ChatList, ChatFooter
+    ChatToggle, ChatHead, ChatList, ChatFooter
   },
   methods: {
     openChat() {
@@ -44,17 +45,8 @@ export default {
 }
 </script>
 
-<style scoped>
-/************ WIDGET ************/
-
-.live-chat {
-  position: fixed;
-  right: 10px;
-  bottom: 10px;
-  font-size: .9rem;
-}
-
-.btn {
+<style>
+.livechat-btn {
   font-family: inherit;
   border: none;
   outline: none;
@@ -62,62 +54,14 @@ export default {
   cursor: pointer;
 }
 
-.chat-toggle {
-  background: #14957B;
-  position: relative;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  border-radius: 50%;
-  transition: 2.3s;
-}
-.chat-toggle_new-msg::after {
-  content: '';
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  background: #FF3D1B;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-}
-.chat-toggle_new-msg {
-  animation-duration: 1s;
-  animation-name: anim-new-msg;
-}
-@keyframes anim-new-msg {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.5);
-    background: darkred;
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-.icon-logo {
-  fill: none;
-  width: 30px;
-  height: 30px;
-}
-.icon-logo__figure {
-  fill: #ffffff;
-}
-
-.icon-close {
+.livechat-icon-close {
   position: relative;
   display: inline-block;
   width: 20px;
   height: 20px;
 }
-.icon-close::before,
-.icon-close::after {
+.livechat-icon-close::before,
+.livechat-icon-close::after {
   content: '';
   background: #ffffff;
   display: block;
@@ -127,14 +71,30 @@ export default {
   position: absolute;
   top: 50%;
 }
-.icon-close::before {
+.livechat-icon-close::before {
   transform: translateY(-50%) rotate(45deg);
 }
-.icon-close::after {
+.livechat-icon-close::after {
   transform: translateY(-50%) rotate(-45deg);
 }
+.livechat-icon-close_head {
+  width: 16px;
+  height: 16px;
+  transition: .1s;
+  opacity: .7;
+}
+.livechat-icon-close_head:hover {
+  opacity: 1;
+}
+</style>
 
-/************ CHAT ************/
+<style scoped>
+.live-chat {
+  position: fixed;
+  right: 10px;
+  bottom: 10px;
+  font-size: .9rem;
+}
 
 .chat-box {
   background: #f2f2f2;

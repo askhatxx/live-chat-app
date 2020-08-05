@@ -2,7 +2,7 @@
   <div class="chat-box__footer">
     <div class="chat-box__input" contenteditable="true" tabindex="0" placeholder="Write a message"></div>
     <div class="chat-box__options">
-      <button class="btn chat-box__btn-send" title="Send">
+      <button class="livechat-btn chat-box__btn-send" title="Send">
         <svg class="icon-send" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
           <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
         </svg>
@@ -12,14 +12,6 @@
 </template>
 
 <style scoped>
-.btn {
-  font-family: inherit;
-  border: none;
-  outline: none;
-  user-select: none;
-  cursor: pointer;
-}
-
 .chat-box__footer {
   display: flex;
   align-items: center;

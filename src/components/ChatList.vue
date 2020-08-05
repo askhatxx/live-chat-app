@@ -1,43 +1,24 @@
 <template>
   <div class="chat-box__list">
-    <div class="chat-box__msg-block chat-box__msg-block_sent">
+    <div 
+      v-for="msg in chat" 
+      :key="msg.id" 
+      class="chat-box__msg-block" 
+      :class="{'chat-box__msg-block_sent': msg.author === 'user'}"
+    >
       <div class="chat-box__msg-text">
-        <div>Hello</div>
-        <div class="chat-box__msg-date">24.07.20 15:40</div>
-      </div>
-    </div>
-    <div class="chat-box__msg-block chat-box__msg-block_received">
-      <div class="chat-box__msg-text">
-        <div>Hi!</div>
-        <div class="chat-box__msg-date">24.07.20 15:40</div>
-      </div>
-    </div>
-    <div class="chat-box__msg-block chat-box__msg-block_sent">
-      <div class="chat-box__msg-text">
-        <div>Lorem ipsum dolor, sit amet consectetur adipisicing elit.</div>
-        <div class="chat-box__msg-date">24.07.20 15:40</div>
-      </div>
-    </div>
-    <div class="chat-box__msg-block chat-box__msg-block_received">
-      <div class="chat-box__msg-text">
-        <div>Lorem ipsum dolor, sit amet consectetur adipisicing elit.</div>
-        <div class="chat-box__msg-date">24.07.20 16:35</div>
-      </div>
-    </div>
-    <div class="chat-box__msg-block chat-box__msg-block_sent">
-      <div class="chat-box__msg-text">
-        <div>Lorem ipsum dolor</div>
-        <div class="chat-box__msg-date">24.07.20 15:40</div>
-      </div>
-    </div>
-    <div class="chat-box__msg-block chat-box__msg-block_received">
-      <div class="chat-box__msg-text">
-        <div>Lorem ipsumdolorsitametconsecteturadipisicingelit.</div>
-        <div class="chat-box__msg-date">24.07.20 15:40</div>
+        <div>{{ msg.text }}</div>
+        <div class="chat-box__msg-date">{{ msg.date }}</div>
       </div>
     </div>
   </div>
 </template>
+
+<script>
+export default {
+  props: ['chat']
+}
+</script>
 
 <style scoped>
 .chat-box__list {
