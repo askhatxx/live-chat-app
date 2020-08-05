@@ -8,7 +8,7 @@
     <div class="chat-box" :class="{'chat-box_open': isOpen}">
       <ChatHead @open-chat="openChat"/>
       <ChatList :chat="chat"/>
-      <ChatFooter/>
+      <ChatFooter @send-msg="sendMsg"/>
     </div>
   </div>
 </template>
@@ -40,6 +40,10 @@ export default {
   methods: {
     openChat() {
       this.isOpen = !this.isOpen
+    },
+    sendMsg(text) {
+      console.log('sendMsg -->', text)
+      this.chat.push({ text: text, date: '25.07.20 15:40', id: Date.now(), author: 'user' })
     }
   }
 }

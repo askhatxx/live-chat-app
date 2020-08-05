@@ -1,5 +1,5 @@
 <template>
-  <div class="chat-box__list">
+  <div ref="chatList" class="chat-box__list">
     <div 
       v-for="msg in chat" 
       :key="msg.id" 
@@ -16,7 +16,18 @@
 
 <script>
 export default {
-  props: ['chat']
+  props: ['chat'],
+  mounted() {
+    this.scrollToBottom()
+  },
+  updated() {
+    this.scrollToBottom()
+  },
+  methods: {
+    scrollToBottom() {
+      this.$refs.chatList.scrollTop = this.$refs.chatList.scrollHeight
+    }
+  }
 }
 </script>
 
