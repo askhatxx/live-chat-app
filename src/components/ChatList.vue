@@ -8,7 +8,7 @@
     >
       <div class="chat-box__msg-text">
         <div>{{ msg.text }}</div>
-        <div class="chat-box__msg-date">{{ msg.date }}</div>
+        <div class="chat-box__msg-date">{{ new Date(msg.date).toString() }}</div>
       </div>
     </div>
   </div>

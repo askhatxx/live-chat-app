@@ -1,14 +1,17 @@
 <template>
   <div class="live-chat">
     <ChatToggle 
+      @render-chat="renderChat"
       @open-chat="openChat"
       :isOpen="isOpen"
       :isNewMsg="isNewMsg"
     />
     <div class="chat-box" :class="{'chat-box_open': isOpen}">
-      <ChatHead @open-chat="openChat"/>
-      <ChatList :chat="chat"/>
-      <ChatFooter @send-msg="sendMsg"/>
+      <template v-if="isRender">
+        <ChatHead @open-chat="openChat"/>
+        <ChatList :chat="chat"/>
+        <ChatFooter @send-msg="sendMsg"/>
+      </template>
     </div>
   </div>
 </template>
@@ -18,32 +21,62 @@ import ChatToggle from '@/components/ChatToggle'
 import ChatHead from '@/components/ChatHead'
 import ChatList from '@/components/ChatList'
 import ChatFooter from '@/components/ChatFooter'
+import { db } from '@/base'
 
 export default {
   data() {
     return {
       isOpen: false,
       isNewMsg: true,
+      isRender: false,
       chat: [
-        { text: 'Hello', date: '24.07.20 15:40', id: '01', author: 'user' },
-        { text: 'Hi!', date: '24.07.20 16:35', id: '02', author: 'admin' },
-        { text: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit.', date: '24.07.20 15:40', id: '03', author: 'user' },
-        { text: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit.', date: '24.07.20 16:35', id: '04', author: 'admin' },
-        { text: 'Lorem ipsum dolor', date: '24.07.20 15:40', id: '05', author: 'user' },
-        { text: 'Lorem ipsumdolorsitametconsecteturadipisicingelit.', date: '24.07.20 16:35', id: '06', author: 'admin' },
+        // { text: 'Hello', date: 1595241029985, id: 1595241029985, author: 'user', read: true },
+        // { text: 'Hi!', date: 1595241129985, id: 1595241129985, author: 'admin', read: true },
+        // { text: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit.', date: 1595241329985, id: 1595241329985, author: 'user', read: true },
+        // { text: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit.', date: 1595241529985, id: 1595241529985, author: 'admin', read: true },
+        // { text: 'Lorem ipsum dolor', date: 1595241729985, id: 1595241729985, author: 'user', read: true },
+        // { text: 'Lorem ipsumdolorsitametconsecteturadipisicingelit.', date: 1595241929985, id: 1595241929985, author: 'admin', read: true },
       ]
     }
   },
   components: {
     ChatToggle, ChatHead, ChatList, ChatFooter
   },
+  mounted() {
+    //const idChat = localStorage.getItem('id-chat')
+    this.getMsg()
+  },
   methods: {
     openChat() {
       this.isOpen = !this.isOpen
     },
+    renderChat() {
+      this.isRender = true
+    },
     sendMsg(text) {
-      console.log('sendMsg -->', text)
-      this.chat.push({ text: text, date: '25.07.20 15:40', id: Date.now(), author: 'user' })
+      db.collection('chat-temp')
+        .doc('F9QbWJDZBTz95NZynurx')
+        .update({chat: [...this.chat, { text: text, date: Date.now(), id: Date.now(), author: 'user', read: true }]})
+        .then(() => {
+          console.log('Update doc --->')
+        })
+        .catch((error) => {
+          console.log('db error', error)
+        })
+    },
+    getMsg() {
+      db.collection('chat-temp')
+        .doc('F9QbWJDZBTz95NZynurx')
+        .get()
+        .then(doc => {
+          console.log('Get doc --->', doc)
+          console.log('Get doc.exists --->', doc.exists)
+          console.log('Get doc.data --->', doc.data())
+          this.chat = doc.data().chat
+        })
+        .catch((error) => {
+          console.log('db error', error)
+        })
     }
   }
 }

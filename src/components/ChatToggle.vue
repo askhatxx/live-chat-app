@@ -1,5 +1,6 @@
 <template>
   <button 
+    @click.once="$emit('render-chat')"
     @click="$emit('open-chat')"
     class="livechat-btn chat-toggle"
     :class="{'chat-toggle_new-msg': isNewMsg}"
