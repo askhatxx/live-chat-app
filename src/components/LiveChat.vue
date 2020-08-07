@@ -6,12 +6,10 @@
       :isOpen="isOpen"
       :isNewMsg="isNewMsg"
     />
-    <div class="chat-box" :class="{'chat-box_open': isOpen}">
-      <template v-if="isRender">
-        <ChatHead @open-chat="openChat"/>
-        <ChatList :chat="chat"/>
-        <ChatFooter @send-msg="sendMsg"/>
-      </template>
+    <div v-if="isRender" class="chat-box" :class="{'chat-box_open': isOpen}">
+      <ChatHead @open-chat="openChat"/>
+      <ChatList :chat="chat"/>
+      <ChatFooter @send-msg="sendMsg"/>
     </div>
   </div>
 </template>
@@ -27,8 +25,10 @@ export default {
   data() {
     return {
       isOpen: false,
-      isNewMsg: true,
+      isNewMsg: false,
       isRender: false,
+      unsubscribeDB: null,
+      chatID: null,
       chat: [
         // { text: 'Hello', date: 1595241029985, id: 1595241029985, author: 'user', read: true },
         // { text: 'Hi!', date: 1595241129985, id: 1595241129985, author: 'admin', read: true },
@@ -43,40 +43,89 @@ export default {
     ChatToggle, ChatHead, ChatList, ChatFooter
   },
   mounted() {
-    //const idChat = localStorage.getItem('id-chat')
-    this.getMsg()
+    console.log('LiveChat mounted')
+    const chatID = localStorage.getItem('chat-id') // 'F9QbWJDZBTz95NZynurx'
+    if (chatID) {
+      this.chatID = chatID
+      this.subscribeDB()
+    }
+  },
+  beforeDestroy() {
+    console.log('LiveChat beforeDestroy')
+    if (this.unsubscribeDB) this.unsubscribeDB()
   },
   methods: {
     openChat() {
+      console.log('openChat')
       this.isOpen = !this.isOpen
+      if (this.isOpen) {
+        this.isNewMsg = false
+        this.allMsgRead()
+      }
     },
     renderChat() {
+      console.log('renderChat')
       this.isRender = true
     },
     sendMsg(text) {
-      db.collection('chat-temp')
-        .doc('F9QbWJDZBTz95NZynurx')
-        .update({chat: [...this.chat, { text: text, date: Date.now(), id: Date.now(), author: 'user', read: true }]})
-        .then(() => {
-          console.log('Update doc --->')
-        })
-        .catch((error) => {
-          console.log('db error', error)
-        })
+      console.log('sendMsg')
+      const msg = { text: text, date: Date.now(), id: Date.now(), author: 'user', read: true }
+      if (this.chatID) {
+        db.collection('chat-temp')
+          .doc(this.chatID)
+          .update({chat: [...this.chat, msg]})
+          .then(() => {
+            console.log('Update doc --->')
+          })
+          .catch(error => {
+            console.log('DB error', error)
+          })
+      } else {
+        db.collection('chat-temp')
+          .add({chat: [...this.chat, msg]})
+          .then(docRef => {
+            console.log('Add doc id', docRef.id)
+            this.chatID = docRef.id
+            localStorage.setItem('chat-id', docRef.id)
+            this.subscribeDB()
+          })
+          .catch(error => {
+            console.log('DB error', error)
+          })
+      }
     },
-    getMsg() {
-      db.collection('chat-temp')
-        .doc('F9QbWJDZBTz95NZynurx')
-        .get()
-        .then(doc => {
-          console.log('Get doc --->', doc)
-          console.log('Get doc.exists --->', doc.exists)
-          console.log('Get doc.data --->', doc.data())
-          this.chat = doc.data().chat
-        })
-        .catch((error) => {
-          console.log('db error', error)
-        })
+    allMsgRead() {
+      console.log('allMsgRead check')
+      if (this.chat.some(item => !item.read)) {
+        console.log('allMsgRead update DB')
+        db.collection('chat-temp')
+          .doc(this.chatID)
+          .update({chat: this.chat.map(item => ({...item, read: true}))})
+          .then(() => {
+            console.log('Update doc --->')
+          })
+          .catch(error => {
+            console.log('DB error', error)
+          })
+      }
+    },
+    subscribeDB() {
+      if (this.chatID) {
+        this.unsubscribeDB = db.collection('chat-temp')
+          .doc(this.chatID)
+          .onSnapshot(doc => {
+            console.log('Listen doc ----->', doc)
+            console.log('Listen doc.id ----->', doc.id)
+            console.log('Listen doc.exists ----->', doc.exists)
+            console.log('Listen doc.data', doc.data())
+            this.chat = doc.data().chat
+            if (!this.isOpen && this.chat.some(item => !item.read)) {
+              this.isNewMsg = true
+            } else if (this.isOpen) {
+              this.allMsgRead()
+            }
+          })
+      }
     }
   }
 }

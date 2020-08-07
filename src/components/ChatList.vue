@@ -18,9 +18,11 @@
 export default {
   props: ['chat'],
   mounted() {
+    console.log('ChatList mounted')
     this.scrollToBottom()
   },
   updated() {
+    console.log('ChatList updated')
     this.scrollToBottom()
   },
   methods: {
