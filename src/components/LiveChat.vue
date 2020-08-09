@@ -9,6 +9,7 @@
     <div v-if="isRender" class="chat-box" :class="{'chat-box_open': isOpen}">
       <ChatHead @open-chat="openChat"/>
       <ChatList :chat="chat"/>
+      <ChatInfo v-if="infoAlert.show" :info="infoAlert"/>
       <ChatFooter @send-msg="sendMsg"/>
     </div>
   </div>
@@ -18,6 +19,7 @@
 import ChatToggle from '@/components/ChatToggle'
 import ChatHead from '@/components/ChatHead'
 import ChatList from '@/components/ChatList'
+import ChatInfo from '@/components/ChatInfo'
 import ChatFooter from '@/components/ChatFooter'
 import { db } from '@/base'
 
@@ -29,18 +31,12 @@ export default {
       isRender: false,
       unsubscribeDB: null,
       chatID: null,
-      chat: [
-        // { text: 'Hello', date: 1595241029985, id: 1595241029985, author: 'user', read: true },
-        // { text: 'Hi!', date: 1595241129985, id: 1595241129985, author: 'admin', read: true },
-        // { text: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit.', date: 1595241329985, id: 1595241329985, author: 'user', read: true },
-        // { text: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit.', date: 1595241529985, id: 1595241529985, author: 'admin', read: true },
-        // { text: 'Lorem ipsum dolor', date: 1595241729985, id: 1595241729985, author: 'user', read: true },
-        // { text: 'Lorem ipsumdolorsitametconsecteturadipisicingelit.', date: 1595241929985, id: 1595241929985, author: 'admin', read: true },
-      ]
+      infoAlert: { show: false, text: '', type: '' },
+      chat: []
     }
   },
   components: {
-    ChatToggle, ChatHead, ChatList, ChatFooter
+    ChatToggle, ChatHead, ChatList, ChatInfo, ChatFooter
   },
   mounted() {
     console.log('LiveChat mounted')
@@ -76,9 +72,11 @@ export default {
           .update({chat: [...this.chat, msg]})
           .then(() => {
             console.log('Update doc --->')
+            if (this.infoAlert.show) this.infoAlert.show = false
           })
           .catch(error => {
             console.log('DB error', error)
+            this.infoAlert = { show: true, text: 'Data base error', type: 'error' }
           })
       } else {
         db.collection('chat-temp')
@@ -88,9 +86,11 @@ export default {
             this.chatID = docRef.id
             localStorage.setItem('chat-id', docRef.id)
             this.subscribeDB()
+            if (this.infoAlert.show) this.infoAlert.show = false
           })
           .catch(error => {
             console.log('DB error', error)
+            this.infoAlert = { show: true, text: 'Data base error', type: 'error' }
           })
       }
     },
@@ -103,9 +103,11 @@ export default {
           .update({chat: this.chat.map(item => ({...item, read: true}))})
           .then(() => {
             console.log('Update doc --->')
+            if (this.infoAlert.show) this.infoAlert.show = false
           })
           .catch(error => {
             console.log('DB error', error)
+            this.infoAlert = { show: true, text: 'Data base error', type: 'error' }
           })
       }
     },
@@ -117,12 +119,17 @@ export default {
             console.log('Listen doc ----->', doc)
             console.log('Listen doc.id ----->', doc.id)
             console.log('Listen doc.exists ----->', doc.exists)
-            console.log('Listen doc.data', doc.data())
-            this.chat = doc.data().chat
-            if (!this.isOpen && this.chat.some(item => !item.read)) {
-              this.isNewMsg = true
-            } else if (this.isOpen) {
-              this.allMsgRead()
+            if (doc.exists) {
+              console.log('Listen doc.data', doc.data())
+              this.chat = doc.data().chat
+              if (!this.isOpen && this.chat.some(item => !item.read)) {
+                this.isNewMsg = true
+              } else if (this.isOpen) {
+                this.allMsgRead()
+              }
+            } else {
+              console.log('Listen doc.exists false ----->')
+              this.chatID = null
             }
           })
       }

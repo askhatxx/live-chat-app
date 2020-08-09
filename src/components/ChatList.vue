@@ -8,13 +8,18 @@
     >
       <div class="chat-box__msg-text">
         <div>{{ msg.text }}</div>
-        <div class="chat-box__msg-date">{{ new Date(msg.date).toString() }}</div>
+        <div class="chat-box__msg-date">{{ msg.date | formatDate }}</div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+const formatDateAddZero = num => {
+  if (num < 10) return '0' + num
+  return num
+}
+
 export default {
   props: ['chat'],
   mounted() {
@@ -28,6 +33,17 @@ export default {
   methods: {
     scrollToBottom() {
       this.$refs.chatList.scrollTop = this.$refs.chatList.scrollHeight
+    }
+  },
+  filters: {
+    formatDate(value) {
+      const date = new Date(+value)
+      const day = formatDateAddZero(date.getDate())
+      const month = formatDateAddZero(date.getMonth() + 1)
+      const year = date.getFullYear()
+      const hours = formatDateAddZero(date.getHours())
+      const minutes = formatDateAddZero(date.getMinutes())
+      return `${day}.${month}.${year} ${hours}:${minutes}`
     }
   }
 }
