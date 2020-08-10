@@ -130,6 +130,7 @@ export default {
             } else {
               console.log('Listen doc.exists false ----->')
               this.chatID = null
+              localStorage.removeItem('chat-id')
             }
           })
       }
