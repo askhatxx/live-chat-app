@@ -44,7 +44,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  color: white;
+  color: #ffffff;
   border-radius: 50%;
   transition: 2.3s;
 }

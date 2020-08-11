@@ -1,23 +1,13 @@
 <template>
-  <div>
-    <div v-if="isAuth">
-      <button @click="signOut">Auth SignOut</button>
-      <hr/>
-      <div>
-        <ul>
-          <li v-for="chat in chatList" :key="chat.id" @click="openChatIdSet(chat.id)">{{ chat.id }}</li>
-        </ul>
+  <div class="admin-live-chat">
+    <div v-if="isAuth" class="admin-panel">
+      <div class="admin-panel__signout">
+        <button @click="signOut">Auth SignOut</button>
       </div>
-      <hr/>
-      <div>
-        <div v-if="openChatGet.success">
-          <div v-for="msg in openChatGet.chat" :key="msg.id">{{ msg.text + ' - ' + msg.read}}</div>
-          <input v-model="text" placeholder="Text"/>
-          <button @click="sendMsg">Send text</button>
-        </div>
-      </div>
+      <AdminChatList @open-chat-id-set="openChatIdSet" :chatList="chatList" :openChatId="openChatId"/>
+      <AdminOpenChat @send-msg="sendMsg" :openChatGet="openChatGet"/>
     </div>
-    <div v-else>
+    <div v-else class="admin-login">
       <input v-model="login" placeholder="Login"/>
       <input v-model="password" placeholder="Password"/>
       <button @click="signIn">Auth SignIn</button>
@@ -26,6 +16,8 @@
 </template>
 
 <script>
+import AdminChatList from '@/components/AdminChatList'
+import AdminOpenChat from '@/components/AdminOpenChat'
 import { db, auth } from '@/base'
 
 export default {
@@ -37,9 +29,11 @@ export default {
       login: 'user02@test.test',
       password: 'user02',
       chatList: [],
-      openChatId: null,
-      text: ''
+      openChatId: null
     }
+  },
+  components: {
+    AdminChatList, AdminOpenChat
   },
   mounted() {
     console.log('AdminLiveChat mounted')
@@ -87,12 +81,12 @@ export default {
         }
       })  
     },
-    sendMsg() {
+    sendMsg(text) {
       const activeChat = this.openChatGet
       if (activeChat.success) {
         db.collection('chat-temp')
           .doc(activeChat.id)
-          .update({chat: [...activeChat.chat, { text: this.text, date: Date.now(), id: Date.now(), author: 'admin', read: false }]})
+          .update({chat: [...activeChat.chat, { text: text, date: Date.now(), id: Date.now(), author: 'admin', read: false }]})
           .then(() => {
             console.log('Update doc --->')
           })
@@ -125,3 +119,19 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.admin-live-chat {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.admin-panel {
+  display: flex;
+  flex-wrap: wrap;
+}
+.admin-panel__signout {
+  width: 100%;
+}
+</style>
