@@ -2,10 +2,18 @@
   <div class="admin-live-chat">
     <div v-if="isAuth" class="admin-panel">
       <div class="admin-panel__signout">
-        <button @click="signOut">Auth SignOut</button>
+        <button @click="signOut" class="livechat-btn">Auth SignOut</button>
       </div>
-      <AdminChatList @open-chat-id-set="openChatIdSet" :chatList="chatList" :openChatId="openChatId"/>
-      <AdminOpenChat @send-msg="sendMsg" :openChatGet="openChatGet"/>
+      <AdminChatList 
+        @open-chat-id-set="openChatIdSet"
+        :chatList="chatList"
+        :openChatId="openChatId"
+      />
+      <AdminOpenChat 
+        @send-msg="sendMsg"
+        @delete-chat="deleteChat"
+        :openChatGet="openChatGet"
+      />
     </div>
     <div v-else class="admin-login">
       <input v-model="login" placeholder="Login"/>
@@ -47,6 +55,7 @@ export default {
   computed: {
     openChatGet() {
       const activeChat = this.chatList.find(item => item.id === this.openChatId)
+      console.log('openChatGet', activeChat)
       if (activeChat) return {...activeChat, success: true}
       else return {success: false}
     }
@@ -82,6 +91,7 @@ export default {
       })  
     },
     sendMsg(text) {
+      console.log('sendMsg text --->', text)
       const activeChat = this.openChatGet
       if (activeChat.success) {
         db.collection('chat-temp')
@@ -94,6 +104,17 @@ export default {
             console.log('Auth error', error)
           })
       }
+    },
+    deleteChat(id) {
+      db.collection('chat-temp')
+        .doc(id)
+        .delete()
+        .then(() => {
+          console.log('Delete doc --->', id)
+        })
+        .catch((error) => {
+          console.log('Auth error', error)
+        })
     },
     subscribeDB() {
       this.unsubscribeDB = db.collection('chat-temp')
@@ -113,7 +134,8 @@ export default {
         })
     },
     openChatIdSet(id) {
-      this.openChatId = id
+      if (this.openChatId === id) this.openChatId = null
+      else this.openChatId = id
       console.log('openChatId', this.openChatId)
     }
   }
@@ -123,8 +145,9 @@ export default {
 <style scoped>
 .admin-live-chat {
   width: 100%;
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
+  font-size: 1rem;
 }
 
 .admin-panel {
@@ -132,6 +155,7 @@ export default {
   flex-wrap: wrap;
 }
 .admin-panel__signout {
-  width: 100%;
+  flex: 0 0 100%;
+  padding: 10px;
 }
 </style>

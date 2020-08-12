@@ -1,6 +1,6 @@
 <template>
   <div class="admin-panel__chat-list">
-    <ul class="admin-panel__chat-ul">
+    <ul v-if="chatList.length" class="admin-panel__chat-ul">
       <li 
         v-for="chat in chatList"
         :key="chat.id"
@@ -11,6 +11,7 @@
         {{ chat.id }}
       </li>
     </ul>
+    <div v-else class="admin-panel__no-chat">No chats</div>
   </div>
 </template>
 
@@ -22,20 +23,33 @@ export default {
 
 <style scoped>
 .admin-panel__chat-list {
-  width: 100%;
-  max-width: 300px;
+  flex: 0 0 33.33%;
   padding: 10px;
+}
+@media (max-width: 500px) {
+  .admin-panel__chat-list {
+    flex: 0 0 100%;
+  }
 }
 .admin-panel__chat-ul {
   list-style: none;
+  max-height: calc(100vh - 120px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  border-radius: 10px;
 }
 .admin-panel__chat-li {
   display: block;
   padding: 10px;
   background: #14957B;
-  border-bottom: 1px solid #4AB9A3;
+  border-bottom: 1px solid #3db29a;
   color: #ffffff;
+  word-wrap: break-word;
+  transition: .1s;
   cursor: pointer;
+}
+.admin-panel__chat-li:hover {
+  background: #24a188;
 }
 .admin-panel__chat-li:first-child {
   border-radius: 10px 10px 0 0;
@@ -45,6 +59,13 @@ export default {
   border-bottom: none;
 }
 .admin-panel__chat-li_active {
-  background: #4AB9A3;
+  background: #3db29a;
+}
+.admin-panel__no-chat {
+  background: #14957B;
+  padding: 20px 10px;
+  color: #ffffff;
+  border-radius: 10px;
+  text-align: center;
 }
 </style>

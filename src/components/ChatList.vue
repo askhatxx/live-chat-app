@@ -8,7 +8,10 @@
     >
       <div class="chat-box__msg-text">
         <div>{{ msg.text }}</div>
-        <div class="chat-box__msg-date">{{ msg.date | formatDate }}</div>
+        <div class="chat-box__msg-date">
+          <span v-if="showRead" :class="msg.read ? 'msg-read' : 'msg-unread'">{{ msg.read }}</span>
+          {{ msg.date | formatDate }}
+        </div>
       </div>
     </div>
   </div>
@@ -21,7 +24,7 @@ const formatDateAddZero = num => {
 }
 
 export default {
-  props: ['chat'],
+  props: ['chat', 'showRead'],
   mounted() {
     console.log('ChatList mounted')
     this.scrollToBottom()
@@ -86,5 +89,12 @@ export default {
   padding: 1px 5px;
   border-radius: 5px;
   font-size: .8rem;
+  white-space: normal;
 }
-</style>>
+.msg-read {
+  background: green;
+}
+.msg-unread {
+  background: red;
+}
+</style>
