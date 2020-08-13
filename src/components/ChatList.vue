@@ -9,7 +9,11 @@
       <div class="chat-box__msg-text">
         <div>{{ msg.text }}</div>
         <div class="chat-box__msg-date">
-          <span v-if="showRead" :class="msg.read ? 'msg-read' : 'msg-unread'">{{ msg.read }}</span>
+          <span 
+            v-if="showRead"
+            :class="['msg-status', msg.read ? 'msg-status_read' : 'msg-status_unread']"
+            :title="msg.read ? 'Read message' : 'Unread message'"
+          ></span>
           {{ msg.date | formatDate }}
         </div>
       </div>
@@ -91,10 +95,15 @@ export default {
   font-size: .8rem;
   white-space: normal;
 }
-.msg-read {
-  background: green;
+.msg-status {
+  border: 1px solid rgba(0, 0, 0, .3);
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
 }
-.msg-unread {
-  background: red;
+.msg-status_read {
+  background: rgba(0, 0, 0, .3);
+  border: none;
 }
 </style>

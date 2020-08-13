@@ -1,11 +1,18 @@
 <template>
   <div class="admin-live-chat">
-    <div v-if="isAuth" class="admin-panel">
-      <div class="admin-panel__signout">
-        <button @click="signOut" class="livechat-btn">Auth SignOut</button>
+    <div class="admin-head">
+      <div class="admin-head__header">
+        <span>
+          <router-link to="/" class="admin-head__btn-header">Home page</router-link>
+          <span class="admin-head__title">Admin panel</span>
+        </span>
+        <button v-if="isAuth" @click="signOut" class="livechat-btn admin-head__btn-header">Logout</button>
       </div>
+    </div>
+    <div v-if="isAuth" class="admin-panel">
       <AdminChatList 
         @open-chat-id-set="openChatIdSet"
+        :loadingDB="loadingDB"
         :chatList="chatList"
         :openChatId="openChatId"
       />
@@ -34,6 +41,7 @@ export default {
       isAuth: false,
       unsubscribeAuth: null,
       unsubscribeDB: null,
+      loadingDB: false,
       login: 'user02@test.test',
       password: 'user02',
       chatList: [],
@@ -117,6 +125,7 @@ export default {
         })
     },
     subscribeDB() {
+      this.loadingDB = true
       this.unsubscribeDB = db.collection('chat-temp')
         .onSnapshot(snapshot => {
           const chatList = []
@@ -130,6 +139,7 @@ export default {
             const valeuB = b.chat[b.chat.length - 1] && b.chat[b.chat.length - 1].date || 0
             return valeuB - valeuA
           })
+          this.loadingDB = false
           console.log('chatList', chatList)
         })
     },
@@ -150,12 +160,36 @@ export default {
   font-size: 1rem;
 }
 
+.admin-head {
+  padding: 10px;
+}
+.admin-head__header {
+  background: #f2f2f2;
+  padding: 10px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.admin-head__btn-header {
+  background: #3db29a;
+  color: #ffffff;
+  padding: 3px 8px;
+  border-radius: 6px;
+  display: inline-block;
+  font-size: .9rem;
+  text-decoration: none;
+  transition: .1s;
+}
+.admin-head__btn-header:hover {
+  background: #24a188;
+}
+.admin-head__title {
+  margin-left: 8px;
+}
+
 .admin-panel {
   display: flex;
   flex-wrap: wrap;
-}
-.admin-panel__signout {
-  flex: 0 0 100%;
-  padding: 10px;
 }
 </style>

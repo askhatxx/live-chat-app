@@ -46,7 +46,29 @@ export default {
   align-items: center;
   color: #ffffff;
   border-radius: 50%;
-  transition: 2.3s;
+  transition: .1s;
+}
+.chat-toggle:hover {
+  background: #24a188;
+}
+.chat-toggle_new-msg {
+  animation-duration: 1s;
+  animation-name: anim-new-msg;
+}
+@keyframes anim-new-msg {
+  0% {
+    transform: scale(1);
+  }
+  33% {
+    transform: scale(.7);
+    background: #0a7862;
+  }
+  66% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 .chat-toggle_new-msg::after {
   content: '';
@@ -57,21 +79,21 @@ export default {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-}
-.chat-toggle_new-msg {
   animation-duration: 1s;
-  animation-name: anim-new-msg;
+  animation-name: anim-new-msg-after;
 }
-@keyframes anim-new-msg {
+@keyframes anim-new-msg-after {
   0% {
-    transform: scale(1);
+    opacity: 0;
   }
-  50% {
-    transform: scale(1.5);
-    background: darkred;
+  33% {
+    opacity: 0;
+  }
+  66% {
+    opacity: 1;
   }
   100% {
-    transform: scale(1);
+    opacity: 1;
   }
 }
 </style>>

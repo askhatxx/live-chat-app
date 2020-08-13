@@ -39,7 +39,7 @@ export default {
 
 <style scoped>
 .admin-panel__open-chat {
-  flex: 0 0 66.66%;
+  flex: 1 0 66.66%;
   padding: 10px;
 }
 @media (max-width: 500px) {
@@ -52,7 +52,7 @@ export default {
   border-radius: 10px;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 120px);
+  height: calc(100vh - 100px);
   overflow: hidden;
   box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
 }
@@ -79,6 +79,7 @@ export default {
   height: 100%;
   background: #f2f2f2;
   border-radius: 10px;
+  padding: 10px;
   display: flex;
   justify-content: center;
   align-items: center;

@@ -1,6 +1,9 @@
 <template>
   <div class="admin-panel__chat-list">
-    <ul v-if="chatList.length" class="admin-panel__chat-ul">
+    <div v-if="loadingDB" class="admin-panel__loading-db">
+      <Loading/>
+    </div>
+    <ul v-else-if="chatList.length" class="admin-panel__chat-ul">
       <li 
         v-for="chat in chatList"
         :key="chat.id"
@@ -16,14 +19,19 @@
 </template>
 
 <script>
+import Loading from '@/components/Loading'
+
 export default {
-  props: ['chatList', 'openChatId']
+  props: ['loadingDB', 'chatList', 'openChatId'],
+  components: {
+    Loading
+  }
 }
 </script>
 
 <style scoped>
 .admin-panel__chat-list {
-  flex: 0 0 33.33%;
+  flex: 1 0 33.33%;
   padding: 10px;
 }
 @media (max-width: 500px) {
@@ -33,7 +41,7 @@ export default {
 }
 .admin-panel__chat-ul {
   list-style: none;
-  max-height: calc(100vh - 120px);
+  max-height: calc(100vh - 100px);
   overflow-x: hidden;
   overflow-y: auto;
   border-radius: 10px;
@@ -60,6 +68,12 @@ export default {
 }
 .admin-panel__chat-li_active {
   background: #3db29a;
+}
+.admin-panel__loading-db {
+  background: #14957B;
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
 }
 .admin-panel__no-chat {
   background: #14957B;

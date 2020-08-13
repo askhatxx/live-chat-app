@@ -1,10 +1,11 @@
 <template>
   <div>
-    <h2>Home page</h2>
-    <div>
-      <router-link to="/admin">Admin link</router-link>
+    <div class="wrapper">
+      <div class="wrapper__head">
+        <h2 class="wrapper__header">Home page</h2>
+      </div>
+      <div class="wrapper__content"><router-link to="/admin">Admin link</router-link> Lorem ipsum dolor, sit amet consectetur adipisicing elit. Harum aperiam illum blanditiis reprehenderit sapiente cupiditate explicabo. Inventore aliquam iure neque rem, accusamus iusto tempora obcaecati non sed qui fuga asperiores?</div>
     </div>
-    <div class="wrapper">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Harum aperiam illum blanditiis reprehenderit sapiente cupiditate explicabo. Inventore aliquam iure neque rem, accusamus iusto tempora obcaecati non sed qui fuga asperiores?</div>
     <LiveChat/>
   </div>
 </template>
@@ -21,11 +22,24 @@ export default {
 
 <style scoped>
 .wrapper {
-  background: #f2f2f2;
   width: 100%;
-  max-width: 800px;
-  min-height: 200px;
+  max-width: 1000px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 10px;
 }
-</style>>
+.wrapper__head {
+  background: #E3E3E3;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+.wrapper__header {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+.wrapper__content {
+  background: #f2f2f2;
+  padding: 10px;
+  border-radius: 10px;
+}
+</style>
