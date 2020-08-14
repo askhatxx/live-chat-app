@@ -6,7 +6,13 @@
           <router-link to="/" class="admin-head__btn-header">Home page</router-link>
           <span class="admin-head__title">Admin panel</span>
         </span>
-        <button v-if="isAuth" @click="signOut" class="livechat-btn admin-head__btn-header">Logout</button>
+        <button 
+          v-if="isAuth"
+          @click="signOut"
+          class="livechat-btn admin-head__btn-header"
+        >
+          Logout
+        </button>
       </div>
     </div>
     <div v-if="isAuth" class="admin-panel">
@@ -23,9 +29,29 @@
       />
     </div>
     <div v-else class="admin-login">
-      <input v-model="login" placeholder="Login"/>
-      <input v-model="password" placeholder="Password"/>
-      <button @click="signIn">Auth SignIn</button>
+      <div class="admin-login__box">
+        <input 
+          v-model="login"
+          class="admin-login__input"
+          type="text"
+          placeholder="Login"
+        />
+        <input 
+          v-model="password"
+          @keyup.enter="signIn"
+          class="admin-login__input"
+          type="password"
+          placeholder="Password"
+        />
+        <div v-if="loginInfo" class="admin-login__info">{{ loginInfo }}</div>
+        <button 
+          @click="signIn"
+          :disabled="loadingAuth"
+          class="livechat-btn admin-login__btn-signin"
+        >
+          Sign in
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -33,7 +59,7 @@
 <script>
 import AdminChatList from '@/components/AdminChatList'
 import AdminOpenChat from '@/components/AdminOpenChat'
-import { db, auth } from '@/base'
+import { dbCollectionChat, auth } from '@/base'
 
 export default {
   data() {
@@ -41,9 +67,11 @@ export default {
       isAuth: false,
       unsubscribeAuth: null,
       unsubscribeDB: null,
+      loadingAuth: false,
       loadingDB: false,
       login: 'user02@test.test',
       password: 'user02',
+      loginInfo: '',
       chatList: [],
       openChatId: null
     }
@@ -70,16 +98,21 @@ export default {
   },
   methods: {
     async signIn() {
+      this.loadingAuth = true
       try {
         await auth.signInWithEmailAndPassword(this.login, this.password)
+        this.loadingAuth = false
         console.log('Auth signIn')
       } catch (error) {
+        this.loginInfo = error.message
+        this.loadingAuth = false
         console.log('Auth error', error)
       }
     },
     signOut() {
       auth.signOut()
         .then(() => {
+          this.loginInfo = ''
           console.log('Auth signOut')
         })
         .catch((error) => {
@@ -102,7 +135,7 @@ export default {
       console.log('sendMsg text --->', text)
       const activeChat = this.openChatGet
       if (activeChat.success) {
-        db.collection('chat-temp')
+        dbCollectionChat
           .doc(activeChat.id)
           .update({chat: [...activeChat.chat, { text: text, date: Date.now(), id: Date.now(), author: 'admin', read: false }]})
           .then(() => {
@@ -114,7 +147,7 @@ export default {
       }
     },
     deleteChat(id) {
-      db.collection('chat-temp')
+      dbCollectionChat
         .doc(id)
         .delete()
         .then(() => {
@@ -126,7 +159,7 @@ export default {
     },
     subscribeDB() {
       this.loadingDB = true
-      this.unsubscribeDB = db.collection('chat-temp')
+      this.unsubscribeDB = dbCollectionChat
         .onSnapshot(snapshot => {
           const chatList = []
           snapshot.forEach(doc => {
@@ -191,5 +224,62 @@ export default {
 .admin-panel {
   display: flex;
   flex-wrap: wrap;
+}
+
+.admin-login {
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+}
+.admin-login__box {
+  background: #14957B;
+  padding: 20px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+}
+.admin-login__input {
+  background: #3db29a;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  border-radius: 6px;
+  padding: 8px;
+  margin-bottom: 10px;
+  color: #ffffff;
+  font-size: 1rem;
+  transition: .3s;
+}
+.admin-login__input::placeholder {
+  color: #ffffff;
+  opacity: .8;
+}
+.admin-login__input:hover, 
+.admin-login__input:focus {
+  background: #66c7b3;
+}
+.admin-login__info {
+  background: #f5b1ac;
+  border-radius: 6px;
+  padding: 8px;
+  margin-bottom: 10px;
+  color: #751919;
+}
+.admin-login__btn-signin {
+  background: #006c57;
+  border-radius: 6px;
+  padding: 8px;
+  color: #ffffff;
+  font-size: 1rem;
+  transition: .3s;
+}
+.admin-login__btn-signin:hover {
+  background: #005646;
+}
+.admin-login__btn-signin:disabled {
+  background: #127965;
+  color: #afd7cf;
 }
 </style>

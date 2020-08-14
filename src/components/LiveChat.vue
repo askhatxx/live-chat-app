@@ -21,7 +21,7 @@ import ChatHead from '@/components/ChatHead'
 import ChatList from '@/components/ChatList'
 import ChatInfo from '@/components/ChatInfo'
 import ChatFooter from '@/components/ChatFooter'
-import { db } from '@/base'
+import { dbCollectionChat } from '@/base'
 
 export default {
   data() {
@@ -40,7 +40,7 @@ export default {
   },
   mounted() {
     console.log('LiveChat mounted')
-    const chatID = localStorage.getItem('chat-id') // 'F9QbWJDZBTz95NZynurx'
+    const chatID = localStorage.getItem('chat-id')
     if (chatID) {
       this.chatID = chatID
       this.subscribeDB()
@@ -67,7 +67,7 @@ export default {
       console.log('sendMsg')
       const msg = { text: text, date: Date.now(), id: Date.now(), author: 'user', read: true }
       if (this.chatID) {
-        db.collection('chat-temp')
+        dbCollectionChat
           .doc(this.chatID)
           .update({chat: [...this.chat, msg]})
           .then(() => {
@@ -79,7 +79,7 @@ export default {
             this.infoAlert = { show: true, text: 'Data base error', type: 'error' }
           })
       } else {
-        db.collection('chat-temp')
+        dbCollectionChat
           .add({chat: [...this.chat, msg]})
           .then(docRef => {
             console.log('Add doc id', docRef.id)
@@ -98,7 +98,7 @@ export default {
       console.log('allMsgRead check')
       if (this.chat.some(item => !item.read)) {
         console.log('allMsgRead update DB')
-        db.collection('chat-temp')
+        dbCollectionChat
           .doc(this.chatID)
           .update({chat: this.chat.map(item => ({...item, read: true}))})
           .then(() => {
@@ -113,7 +113,7 @@ export default {
     },
     subscribeDB() {
       if (this.chatID) {
-        this.unsubscribeDB = db.collection('chat-temp')
+        this.unsubscribeDB = dbCollectionChat
           .doc(this.chatID)
           .onSnapshot(doc => {
             console.log('Listen doc ----->', doc)
