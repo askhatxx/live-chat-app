@@ -8,7 +8,7 @@
     />
     <div v-if="isRender" class="chat-box" :class="{'chat-box_open': isOpen}">
       <ChatHead @open-chat="openChat"/>
-      <ChatList :chat="chat"/>
+      <ChatList :chat="chat" :showRead="false"/>
       <ChatInfo v-if="infoAlert.show" :info="infoAlert"/>
       <ChatFooter @send-msg="sendMsg"/>
     </div>
@@ -65,7 +65,7 @@ export default {
     },
     sendMsg(text) {
       console.log('sendMsg')
-      const msg = { text: text, date: Date.now(), id: Date.now(), author: 'user', read: true }
+      const msg = { text: text, date: Date.now(), id: Date.now(), author: 'user', read: false }
       if (this.chatID) {
         dbCollectionChat
           .doc(this.chatID)
@@ -96,11 +96,14 @@ export default {
     },
     allMsgRead() {
       console.log('allMsgRead check')
-      if (this.chat.some(item => !item.read)) {
+      if (this.chat.some(item => item.author === 'admin' && !item.read)) {
         console.log('allMsgRead update DB')
         dbCollectionChat
           .doc(this.chatID)
-          .update({chat: this.chat.map(item => ({...item, read: true}))})
+          .update({chat: this.chat.map(item => {
+            if (item.author === 'admin') return {...item, read: true}
+            return item
+          })})
           .then(() => {
             console.log('Update doc --->')
             if (this.infoAlert.show) this.infoAlert.show = false
@@ -122,7 +125,7 @@ export default {
             if (doc.exists) {
               console.log('Listen doc.data', doc.data())
               this.chat = doc.data().chat
-              if (!this.isOpen && this.chat.some(item => !item.read)) {
+              if (!this.isOpen && this.chat.some(item => item.author === 'admin' && !item.read)) {
                 this.isNewMsg = true
               } else if (this.isOpen) {
                 this.allMsgRead()

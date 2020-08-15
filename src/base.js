@@ -13,5 +13,5 @@ const firebaseConfig = {
 }
 firebase.initializeApp(firebaseConfig)
 
-export const dbCollectionChat = firebase.firestore().collection('chat-temp')
+export const dbCollectionChat = firebase.firestore().collection('live-chat')
 export const auth = firebase.auth()

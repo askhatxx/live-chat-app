@@ -39,12 +39,14 @@ export default {
 
 <style scoped>
 .admin-panel__open-chat {
-  flex: 1 0 66.66%;
+  flex: 0 0 66.66%;
+  max-width: 66.66%;
   padding: 10px;
 }
 @media (max-width: 500px) {
   .admin-panel__open-chat {
     flex: 0 0 100%;
+    max-width: 100%;
   }
 }
 .admin-panel__chat-box {

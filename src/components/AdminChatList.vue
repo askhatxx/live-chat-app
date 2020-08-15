@@ -9,7 +9,7 @@
         :key="chat.id"
         @click="$emit('open-chat-id-set', chat.id)"
         class="admin-panel__chat-li"
-        :class="{'admin-panel__chat-li_active': chat.id === openChatId}"
+        :class="{'admin-panel__chat-li_active': chat.id === openChatId, 'admin-panel__chat-li_new-msg': checkNewMsg(chat)}"
       >
         {{ chat.id }}
       </li>
@@ -25,18 +25,27 @@ export default {
   props: ['loadingDB', 'chatList', 'openChatId'],
   components: {
     Loading
+  },
+  methods: {
+    checkNewMsg(chat) {
+      console.log('checkNewMsg ************** ', chat)
+      if (chat.id === this.openChatId) return false
+      return chat.chat.some(item => item.author === 'user' && !item.read)
+    }
   }
 }
 </script>
 
 <style scoped>
 .admin-panel__chat-list {
-  flex: 1 0 33.33%;
+  flex: 0 0 33.33%;
+  max-width: 33.33%;
   padding: 10px;
 }
 @media (max-width: 500px) {
   .admin-panel__chat-list {
     flex: 0 0 100%;
+    max-width: 100%;
   }
 }
 .admin-panel__chat-ul {
@@ -48,7 +57,9 @@ export default {
 }
 .admin-panel__chat-li {
   display: block;
+  position: relative;
   padding: 10px;
+  padding-right: 15px;
   background: #14957B;
   border-bottom: 1px solid #3db29a;
   color: #ffffff;
@@ -68,6 +79,17 @@ export default {
 }
 .admin-panel__chat-li_active {
   background: #3db29a;
+}
+.admin-panel__chat-li_new-msg::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 5px;
+  transform: translateY(-50%);
+  background: #FF3D1B;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
 }
 .admin-panel__loading-db {
   background: #14957B;

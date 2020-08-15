@@ -69,8 +69,8 @@ export default {
       unsubscribeDB: null,
       loadingAuth: false,
       loadingDB: false,
-      login: 'user02@test.test',
-      password: 'user02',
+      login: 'user@test.test',
+      password: 'userpassword',
       loginInfo: '',
       chatList: [],
       openChatId: null
@@ -172,14 +172,40 @@ export default {
             const valeuB = b.chat[b.chat.length - 1] && b.chat[b.chat.length - 1].date || 0
             return valeuB - valeuA
           })
-          this.loadingDB = false
+          if (this.loadingDB) this.loadingDB = false
+          this.allMsgRead()
           console.log('chatList', chatList)
         })
     },
     openChatIdSet(id) {
       if (this.openChatId === id) this.openChatId = null
-      else this.openChatId = id
+      else {
+        this.openChatId = id
+        this.allMsgRead()
+      }
       console.log('openChatId', this.openChatId)
+    },
+    allMsgRead() {
+      console.log('allMsgRead check')
+      const activeChat = this.openChatGet
+      if (activeChat.success) {
+        if (activeChat.chat.some(item => item.author === 'user' && !item.read)) {
+          console.log('allMsgRead update DB')
+          dbCollectionChat
+            .doc(activeChat.id)
+            .update({chat: activeChat.chat.map(item => {
+              if (item.author === 'user') return {...item, read: true}
+              return item
+            })})
+            .then(() => {
+              console.log('Update doc --->')
+            })
+            .catch(error => {
+              console.log('DB error', error)
+            })
+        }
+
+      }
     }
   }
 }
