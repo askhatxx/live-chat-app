@@ -1,24 +1,31 @@
-# live-chat-app
+This project uses Vue.js.
 
-## Project setup
+Demo: [https://askhatxx.github.io/live-chat-app/](https://askhatxx.github.io/live-chat-app/)
+
+**Описание**
+
+Веб-приложение написано на Vue.js с использованием сервиса Firebase (облачная СУБД). Проект представляет собой online-чат между посетителем приложения и администратором.
+
+Когда пользователь отправляет первое сообщение, в хранилище его браузера (localStorage) записывается уникальный ID чата. Это позволяет сохранить историю переписки и возобновлять диалог после перезагрузки браузера. Если сообщение от администратора было написано в момент, когда браузер пользователя был закрыт, то посетитель получит его при следующем визите. При получении нового сообщения, кнопка чата анимируется, уведомляя пользователя об этом.
+
+Администратор, после авторизации, получает список всех чатов. Если чат содержит непрочитанное администратором сообщение от пользователя, то такой чат помечается специальной меткой. Так же у администратора есть возможность узнать: было ли прочитано сообщение пользователем или нет (возле даты сообщения есть метка). Чаты можно удалять. При удалении диалога, он так же удаляется у пользователя.
+
+#### Project setup
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+#### Compiles and hot-reloads for development
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
+#### Compiles and minifies for production
 ```
 npm run build
 ```
 
-### Lints and fixes files
+#### Lints and fixes files
 ```
 npm run lint
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
