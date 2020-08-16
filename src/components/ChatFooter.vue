@@ -29,7 +29,6 @@ export default {
       if (this.$refs.textInput.innerText.trim().length > 0) {
         this.$emit('send-msg', this.$refs.textInput.innerText)
         this.$refs.textInput.innerText = ''
-        //this.$refs.textInput.focus()
       }
     }
   }

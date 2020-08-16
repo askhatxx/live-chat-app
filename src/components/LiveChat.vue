@@ -39,7 +39,6 @@ export default {
     ChatToggle, ChatHead, ChatList, ChatInfo, ChatFooter
   },
   mounted() {
-    console.log('LiveChat mounted')
     const chatID = localStorage.getItem('chat-id')
     if (chatID) {
       this.chatID = chatID
@@ -47,12 +46,10 @@ export default {
     }
   },
   beforeDestroy() {
-    console.log('LiveChat beforeDestroy')
     if (this.unsubscribeDB) this.unsubscribeDB()
   },
   methods: {
     openChat() {
-      console.log('openChat')
       this.isOpen = !this.isOpen
       if (this.isOpen) {
         this.isNewMsg = false
@@ -60,18 +57,15 @@ export default {
       }
     },
     renderChat() {
-      console.log('renderChat')
       this.isRender = true
     },
     sendMsg(text) {
-      console.log('sendMsg')
       const msg = { text: text, date: Date.now(), id: Date.now(), author: 'user', read: false }
       if (this.chatID) {
         dbCollectionChat
           .doc(this.chatID)
           .update({chat: [...this.chat, msg]})
           .then(() => {
-            console.log('Update doc --->')
             if (this.infoAlert.show) this.infoAlert.show = false
           })
           .catch(error => {
@@ -82,7 +76,6 @@ export default {
         dbCollectionChat
           .add({chat: [...this.chat, msg]})
           .then(docRef => {
-            console.log('Add doc id', docRef.id)
             this.chatID = docRef.id
             localStorage.setItem('chat-id', docRef.id)
             this.subscribeDB()
@@ -95,9 +88,7 @@ export default {
       }
     },
     allMsgRead() {
-      console.log('allMsgRead check')
       if (this.chat.some(item => item.author === 'admin' && !item.read)) {
-        console.log('allMsgRead update DB')
         dbCollectionChat
           .doc(this.chatID)
           .update({chat: this.chat.map(item => {
@@ -105,7 +96,6 @@ export default {
             return item
           })})
           .then(() => {
-            console.log('Update doc --->')
             if (this.infoAlert.show) this.infoAlert.show = false
           })
           .catch(error => {
@@ -119,11 +109,7 @@ export default {
         this.unsubscribeDB = dbCollectionChat
           .doc(this.chatID)
           .onSnapshot(doc => {
-            console.log('Listen doc ----->', doc)
-            console.log('Listen doc.id ----->', doc.id)
-            console.log('Listen doc.exists ----->', doc.exists)
             if (doc.exists) {
-              console.log('Listen doc.data', doc.data())
               this.chat = doc.data().chat
               if (!this.isOpen && this.chat.some(item => item.author === 'admin' && !item.read)) {
                 this.isNewMsg = true
@@ -131,7 +117,6 @@ export default {
                 this.allMsgRead()
               }
             } else {
-              console.log('Listen doc.exists false ----->')
               this.chat = []
               this.chatID = null
               localStorage.removeItem('chat-id')

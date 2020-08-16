@@ -30,11 +30,9 @@ const formatDateAddZero = num => {
 export default {
   props: ['chat', 'showRead'],
   mounted() {
-    console.log('ChatList mounted')
     this.scrollToBottom()
   },
   updated() {
-    console.log('ChatList updated')
     this.scrollToBottom()
   },
   methods: {
@@ -78,12 +76,26 @@ export default {
   background: #ffffff;
   border-radius: 10px;
   border-bottom-left-radius: 0;
+  transform-origin: left bottom;
+  animation-duration: .3s;
+  animation-name: anim-msg-appear;
 }
 .chat-box__msg-block_sent .chat-box__msg-text {
   color: #ffffff;
   background: #14957B;
   border-radius: 10px;
   border-bottom-right-radius: 0;
+  transform-origin: right bottom;
+}
+@keyframes anim-msg-appear {
+  0% {
+    opacity: 0;
+    transform: scale(.75);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 .chat-box__msg-date {
   display: inline-block;

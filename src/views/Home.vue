@@ -5,9 +5,9 @@
         <h2 class="wrapper__header">Home page</h2>
       </div>
       <div class="wrapper__content">
-        <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit <router-link to="/admin" class="wrapper__btn-inline">Admin panel</router-link></p>
-        <p>Login: user@test.test</p>
-        <p>Password: userpassword</p>
+        <p>You can open the admin panel and reply to messages <router-link to="/admin" class="wrapper__btn-inline">Admin panel</router-link></p>
+        <p>Login: usertest@test.test</p>
+        <p>Password: usertest</p>
       </div>
       <div class="wrapper__blocks">
         <div v-for="n in 9" :key="n" class="wrapper__block"></div>

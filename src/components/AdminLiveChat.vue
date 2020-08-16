@@ -69,8 +69,8 @@ export default {
       unsubscribeDB: null,
       loadingAuth: false,
       loadingDB: false,
-      login: 'user@test.test',
-      password: 'userpassword',
+      login: '',
+      password: '',
       loginInfo: '',
       chatList: [],
       openChatId: null
@@ -80,18 +80,15 @@ export default {
     AdminChatList, AdminOpenChat
   },
   mounted() {
-    console.log('AdminLiveChat mounted')
     this.subscribeAuth()
   },
   beforeDestroy() {
-    console.log('AdminLiveChat beforeDestroy')
     if (this.unsubscribeAuth) this.unsubscribeAuth()
     if (this.unsubscribeDB) this.unsubscribeDB()
   },
   computed: {
     openChatGet() {
       const activeChat = this.chatList.find(item => item.id === this.openChatId)
-      console.log('openChatGet', activeChat)
       if (activeChat) return {...activeChat, success: true}
       else return {success: false}
     }
@@ -102,7 +99,6 @@ export default {
       try {
         await auth.signInWithEmailAndPassword(this.login, this.password)
         this.loadingAuth = false
-        console.log('Auth signIn')
       } catch (error) {
         this.loginInfo = error.message
         this.loadingAuth = false
@@ -113,36 +109,29 @@ export default {
       auth.signOut()
         .then(() => {
           this.loginInfo = ''
-          console.log('Auth signOut')
         })
         .catch((error) => {
           console.log('Auth error', error)
         })
     },
     subscribeAuth() {
-      this.unsubscribeAuth = auth.onAuthStateChanged(user => { // Listener
+      this.unsubscribeAuth = auth.onAuthStateChanged(user => {
         if (user) {
           this.isAuth = true
           this.subscribeDB()
-          console.log('Auth check true')
         } else {
           this.isAuth = false
-          console.log('Auth check false')
         }
       })  
     },
     sendMsg(text) {
-      console.log('sendMsg text --->', text)
       const activeChat = this.openChatGet
       if (activeChat.success) {
         dbCollectionChat
           .doc(activeChat.id)
           .update({chat: [...activeChat.chat, { text: text, date: Date.now(), id: Date.now(), author: 'admin', read: false }]})
-          .then(() => {
-            console.log('Update doc --->')
-          })
           .catch(error => {
-            console.log('Auth error', error)
+            console.log('DB error', error)
           })
       }
     },
@@ -150,11 +139,8 @@ export default {
       dbCollectionChat
         .doc(id)
         .delete()
-        .then(() => {
-          console.log('Delete doc --->', id)
-        })
         .catch((error) => {
-          console.log('Auth error', error)
+          console.log('DB error', error)
         })
     },
     subscribeDB() {
@@ -163,8 +149,6 @@ export default {
         .onSnapshot(snapshot => {
           const chatList = []
           snapshot.forEach(doc => {
-            console.log('Listen collection doc.id ----->', doc.id)
-            console.log('Listen collection doc.data', doc.data())
             chatList.push({...doc.data(), id: doc.id})
           })
           this.chatList = chatList.sort((a, b) => {
@@ -174,7 +158,6 @@ export default {
           })
           if (this.loadingDB) this.loadingDB = false
           this.allMsgRead()
-          console.log('chatList', chatList)
         })
     },
     openChatIdSet(id) {
@@ -183,23 +166,17 @@ export default {
         this.openChatId = id
         this.allMsgRead()
       }
-      console.log('openChatId', this.openChatId)
     },
     allMsgRead() {
-      console.log('allMsgRead check')
       const activeChat = this.openChatGet
       if (activeChat.success) {
         if (activeChat.chat.some(item => item.author === 'user' && !item.read)) {
-          console.log('allMsgRead update DB')
           dbCollectionChat
             .doc(activeChat.id)
             .update({chat: activeChat.chat.map(item => {
               if (item.author === 'user') return {...item, read: true}
               return item
             })})
-            .then(() => {
-              console.log('Update doc --->')
-            })
             .catch(error => {
               console.log('DB error', error)
             })

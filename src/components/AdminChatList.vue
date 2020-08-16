@@ -28,7 +28,6 @@ export default {
   },
   methods: {
     checkNewMsg(chat) {
-      console.log('checkNewMsg ************** ', chat)
       if (chat.id === this.openChatId) return false
       return chat.chat.some(item => item.author === 'user' && !item.read)
     }
